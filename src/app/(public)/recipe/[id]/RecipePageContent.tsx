@@ -1,23 +1,37 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './RecipePage.module.scss';
 import { BackArrowIcon, Button, ErrorMessage, Loading } from '@/components';
 import { RecipeContent } from './components';
 import { RECIPE_INFO_CONFIG, type RecipeInfoItem } from './config';
-import { useRecipe } from '@/hooks/useRecipes';
 import { useFavorites } from '@/hooks/useFavorites';
+import {observer} from "mobx-react-lite"
+import { useStore } from '@/stores/RootStore/RootStoreContext';
 
 interface Props {
-  documentId: string;
+  recipeId: string;
 }
 
-export default function RecipePageContent({ documentId }: Props) {
+const RecipePageContent = observer(({ recipeId }: Props) => {
   const router = useRouter();
 
-  const { data: recipe, isLoading, error } = useRecipe(documentId);
+  const {recipesStore} = useStore();
   const { isSaved, toggleSave } = useFavorites();
+
+  const recipe = recipesStore.selectedRecipe;
+  const isLoading = recipesStore.isRecipeLoading;
+  const error = recipesStore.recipeError;
+
+  useEffect(() => {
+    recipesStore.loadRecipeById(recipeId);
+
+    return (() => {
+      recipesStore.clearSelectedRecipe();
+    })
+  },[recipeId, recipesStore])
 
   const handleGoBack = () => {
     router.back();
@@ -35,7 +49,7 @@ export default function RecipePageContent({ documentId }: Props) {
 
   if (error) {
     return (
-      <ErrorMessage error={error.message}>
+      <ErrorMessage error={error}>
         <Button onClick={handleGoBack}>Вернуться назад</Button>
       </ErrorMessage>
     );
@@ -92,4 +106,5 @@ export default function RecipePageContent({ documentId }: Props) {
       <RecipeContent recipe={recipe} />
     </div>
   );
-}
+})
+export default RecipePageContent;

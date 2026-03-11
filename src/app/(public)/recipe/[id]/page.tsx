@@ -9,7 +9,6 @@ interface Props {
 }
 
 export default function RecipePage({ params }: Props) {
-  console.log('Recipe page rendered with params:', params);
 
   const { id } = params;
 
@@ -20,9 +19,7 @@ export default function RecipePage({ params }: Props) {
   return (
     <>
       <Header />
-      <Suspense fallback={<div>Загрузка рецепта...</div>}>
-        <RecipePageContent documentId={id} />
-      </Suspense>
+        <RecipePageContent recipeId={id} />
     </>
   );
 }

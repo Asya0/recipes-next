@@ -1,4 +1,3 @@
-// import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 // import { getQueryClient } from '@/lib/getQueryClient';
 // import { recipeKeys } from '@/hooks/useRecipes';
 // import { fetchRecipes, fetchCategories } from '@/api/recipesApi';
@@ -28,21 +27,18 @@
 //     <>
 //       <Header />
 //       <Suspense fallback={<div className="loading">Загрузка рецептов...</div>}>
-//         <HydrationBoundary state={dehydrate(queryClient)}>
 //           <RecipesPageContent />
-//         </HydrationBoundary>
 //       </Suspense>
 //     </>
 //   );
 // }
 
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/getQueryClient';
 import { recipeKeys } from '@/hooks/useRecipes';
 import { fetchRecipeById } from '@/api/recipesApi';
 import { Suspense } from 'react';
 import Header from '@/components/Header';
-import RecipePageContent from './RecipesPageContent';
+import RecipesPageContent from './RecipesPageContent';
 
 interface Props {
   params: {
@@ -74,9 +70,7 @@ export default async function RecipePage({ params }: Props) {
     <>
       <Header />
       <Suspense fallback={<div className="loading">Загрузка рецепта...</div>}>
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <RecipePageContent documentId={id} />
-        </HydrationBoundary>
+          <RecipesPageContent documentId={id} />
       </Suspense>
     </>
   );
