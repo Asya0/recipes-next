@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { QueryProvider } from "@/providers/QueryProvider";
 import "@/styles/styles.scss";
 import localFont from "next/font/local";
 import { RootStoreProvider } from "@/stores/RootStore/RootStoreContext";
@@ -38,9 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={roboto.variable}>
-        <RootStoreProvider>
-          <QueryProvider>{children}</QueryProvider>
-        </RootStoreProvider>
+        <RootStoreProvider>{children}</RootStoreProvider>
       </body>
     </html>
   );

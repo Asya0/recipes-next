@@ -1,16 +1,22 @@
-import { makeObservable, observable, action, computed } from 'mobx';
-import { ILocalStore } from '../ILocalStore';
+import { makeObservable, observable, action, computed } from "mobx";
+import { ILocalStore } from "../ILocalStore";
 
-type PrivateFields = '_search' | '_page' | '_category' | '_vegetarian' | '_minRating' | '_maxTime';
+type PrivateFields =
+  | "_search"
+  | "_page"
+  | "_category"
+  | "_vegetarian"
+  | "_minRating"
+  | "_maxTime";
 
 export class QueryParamsStore implements ILocalStore {
-  private _search: string = '';
+  private _search: string = "";
   private _page: number = 1;
 
-  private _category: string = '';
-  private _vegetarian: string = '';
-  private _minRating: string = '';
-  private _maxTime: string = '';
+  private _category: string = "";
+  private _vegetarian: string = "";
+  private _minRating: string = "";
+  private _maxTime: string = "";
 
   constructor() {
     makeObservable<QueryParamsStore, PrivateFields>(this, {
@@ -63,16 +69,16 @@ export class QueryParamsStore implements ILocalStore {
 
   setFilter(key: string, value: string): void {
     switch (key) {
-      case 'category':
+      case "category":
         this._category = value;
         break;
-      case 'vegetarian':
+      case "vegetarian":
         this._vegetarian = value;
         break;
-      case 'minRating':
+      case "minRating":
         this._minRating = value;
         break;
-      case 'maxTime':
+      case "maxTime":
         this._maxTime = value;
         break;
       default:
@@ -83,28 +89,36 @@ export class QueryParamsStore implements ILocalStore {
   }
 
   updateUrl(): void {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     const params = new URLSearchParams();
 
-    if (this._search) params.set('search', this._search);
-    if (this._page > 1) params.set('page', this._page.toString());
-    if (this._category) params.set('category', this._category);
-    if (this._vegetarian === 'true') params.set('vegetarian', 'true');
-    if (this._minRating) params.set('minRating', this._minRating);
-    if (this._maxTime) params.set('maxTime', this._maxTime);
+    if (this._search) params.set("search", this._search);
+    if (this._page > 1) params.set("page", this._page.toString());
+    if (this._category) params.set("category", this._category);
+    if (this._vegetarian === "true") params.set("vegetarian", "true");
+    if (this._minRating) params.set("minRating", this._minRating);
+    if (this._maxTime) params.set("maxTime", this._maxTime);
 
     const queryString = params.toString();
-    const newUrl = `${window.location.pathname}${queryString ? '?' + queryString : ''}`;
-    window.history.replaceState({}, '', newUrl);
+    const newUrl = `${window.location.pathname}${queryString ? "?" + queryString : ""}`;
+    window.history.replaceState({}, "", newUrl);
   }
 
   private _loadFromParams(): void {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     const params = new URLSearchParams(window.location.search);
-    this._search = params.get('search') || '';
-    this._page = parseInt(params.get('page') || '1', 10);
-    this._category = params.get('category') || '';
-    this._vegetarian = params.get('vegetarian') || '';
-    this._minRating = params.get('minRating') || '';
-    this._maxTime = params.get('maxTime') || '';
+    this._search = params.get("search") || "";
+    this._page = parseInt(params.get("page") || "1", 10);
+    this._category = params.get("category") || "";
+    this._vegetarian = params.get("vegetarian") || "";
+    this._minRating = params.get("minRating") || "";
+    this._maxTime = params.get("maxTime") || "";
   }
 
   destroy(): void {}

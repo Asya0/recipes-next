@@ -8,7 +8,7 @@ import ArrowLeftIcon from '../icons/ArrowLeftIcon/ArrowLeftIcon';
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
+  // onPageChange: (page: number) => void;
   className?: string;
 }
 type PageItem = number | '...';
@@ -16,16 +16,16 @@ type PageItem = number | '...';
 const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
-  onPageChange,
+  // onPageChange,
   className = '',
 }) => {
   const handlePrevPage = () => {
     if (currentPage > 1) {
-      onPageChange(currentPage - 1);
+      // onPageChange(currentPage - 1);
     }
   };
   const handleNextPage = () => {
-    onPageChange(currentPage + 1);
+    // onPageChange(currentPage + 1);
   };
 
   const getPageNumbers = () => {
@@ -71,7 +71,7 @@ const Pagination: React.FC<PaginationProps> = ({
         {getPageNumbers().map((page, index) => (
           <div
             key={page === '...' ? `ellipsis-${index}` : page}
-            onClick={() => (typeof page === 'number' ? onPageChange(page) : undefined)}
+            // onClick={() => (typeof page === 'number' ? onPageChange(page) : undefined)}
             className={`${styles.pageButton} ${
               currentPage === page ? styles.activePage : ''
             } ${page === '...' ? styles.dots : ''}`}

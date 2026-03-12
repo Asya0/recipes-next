@@ -1,95 +1,119 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import styles from './RecipesPageContent.module.scss';
-import { BackArrowIcon, Button, ErrorMessage, Loading } from '@/components';
-import { RecipeContent } from '@/app/(public)/recipe/documentId/components/index';
-import { useRecipe } from '@/hooks/useRecipes';
-import { useFavorites } from '@/hooks/useFavorites';
-import { RECIPE_INFO_CONFIG, RecipeInfoItem } from '../recipe/documentId/config';
+import { useEffect } from "react";
+import { observer } from "mobx-react-lite";
+import styles from "./RecipesPageContent.module.scss";
+import {
+  // Pagination,
+  Button,
+  Loading,
+  // SearchBar,
+  ErrorMessage,
+  RecipeCard,
+  Pagination,
+  // FiltersBar,
+  // RecipeCard,
+} from "@/components";
 
-interface Props {
-  documentId: string;
-}
+import Image from "next/image";
+import { useStore } from "@/stores/RootStore/RootStoreContext";
 
-export default function RecipePageContent({ documentId }: Props) {
-  const router = useRouter();
+const RecipesPageContent = observer(() => {
+  const { recipesStore } = useStore();
 
-  const { data: recipe, isLoading, error } = useRecipe(documentId);
-  const { isSaved, toggleSave } = useFavorites();
+  useEffect(() => {
+    recipesStore.fetchRecipes();
+  }, [recipesStore]);
 
-  const handleGoBack = () => {
-    router.back();
-  };
-
-  const handleSave = () => {
-    if (recipe) {
-      toggleSave(recipe);
-    }
-  };
-
-  if (isLoading) {
+  if (recipesStore.isLoading) {
     return <Loading size="l" color="accent" />;
   }
-
-  if (error) {
+  if (recipesStore.error) {
     return (
-      <ErrorMessage error={error.message}>
-        <Button onClick={handleGoBack}>Вернуться назад</Button>
+      <ErrorMessage error={recipesStore.error}>
+        <Button
+          onClick={() => {
+            recipesStore.fetchRecipes();
+          }}
+        >
+          Повторить попытку
+        </Button>
       </ErrorMessage>
     );
   }
 
-  if (!recipe) {
-    return <div className={styles.recipe__notFound}>Рецепт не найден</div>;
-  }
-
-  const saved = isSaved(recipe.id);
-
   return (
-    <div className={styles.recipe}>
-      <div className={styles.recipe__breadcrumbs}>
-        <div className={styles['recipe__back-arrow']} onClick={handleGoBack}>
-          <BackArrowIcon width={24} height={32} strokeWidth={2} />
-        </div>
-        <h1 className={styles.recipe__title}>{recipe.name}</h1>
-        <Button onClick={handleSave} className={saved ? styles.savedButton : styles.saveButton}>
-          {saved ? 'Saved' : 'Save'}
-        </Button>
+    <div className={styles["recipes-page"]}>
+      <div className={styles["recipes-page__banner"]}>
+        <Image
+          src="/assets/header-bg.png"
+          width={100}
+          height={50}
+          alt="recipes"
+          className={styles["recipes-page__bannerImage"]}
+        />
       </div>
 
-      <div className={styles.recipe__main}>
-        {recipe.images?.[0] && (
-          <div className={styles['recipe__image-wrapper']}>
-            <Image
-              src={recipe.images[0].formats?.small?.url || recipe.images[0].url}
-              alt={recipe.name}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className={styles.recipe__image}
-              priority
-            />
+      <div className={styles["recipes-page__infoContainer"]}>
+        <span className={styles["recipes-page__info"]}>
+          Find the perfect food and{" "}
+          <span className={styles["recipes-page__infoUnderlined"]}>
+            drink ideas
+          </span>{" "}
+          for every occasion, from{" "}
+          <span className={styles["recipes-page__infoUnderlined"]}>
+            weeknight dinners
+          </span>{" "}
+          to
+          <span className={styles["recipes-page__infoUnderlined"]}>
+            {" "}
+            holiday feasts
+          </span>
+          .
+        </span>
+      </div>
+
+      <div className={styles["recipes-page__content"]}>
+        {/* <SearchBar
+          placeholder="Enter dishes"
+          value={searchInput}
+          onChange={handleSearchChange}
+          onSearch={handleSearchSubmit}
+          onKeyDown={handleKeyDown}
+        /> */}
+
+        {/* <FiltersBar filters={} onChange={}/> */}
+
+        {recipesStore.recipes.length > 0 && (
+              <div className={styles["recipes-page__grid"]}>
+                {recipesStore.recipes.map((recipe) => (
+                  <RecipeCard
+                    key={recipe.id}
+                    recipe={recipe}
+                    // imageUrl={recipesStore.getRecipeImageUrl(recipe)}
+                    // isSaved={}
+                    // onSave={}
+                  />
+                ))}
+              </div>
+            )}
+
+        {recipesStore.recipes.length === 0 && !recipesStore.isLoading && (
+          <div className={styles["recipes-page__notFound"]}>
+            По вашему запросу ничего не найдено :с
           </div>
         )}
 
-        <div className={styles['recipe__info-grid']}>
-          {RECIPE_INFO_CONFIG.map(({ id, label, getValue }: RecipeInfoItem) => (
-            <div key={id} className={styles['recipe__info-item']}>
-              <span className={styles['recipe__info-label']}>{label}</span>
-              <span className={styles['recipe__info-value']}>{getValue(recipe)}</span>
-            </div>
-          ))}
-        </div>
+        {recipesStore.totalPages > 1 && (
+          <Pagination
+            currentPage={recipesStore.currentPage}
+            totalPages={recipesStore.totalPages}
+            // onPageChange={handlePageChange}
+            className={styles["recipes-page__pagination"]}
+          />
+        )}
       </div>
-
-      {recipe.summary && (
-        <div className={styles.recipe__description}>
-          <div dangerouslySetInnerHTML={{ __html: recipe.summary }} />
-        </div>
-      )}
-
-      <RecipeContent recipe={recipe} />
     </div>
   );
-}
+});
+export default RecipesPageContent;

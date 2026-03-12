@@ -10,7 +10,9 @@ import { usePagination } from '@/hooks/usePagination';
 const PAGE_SIZE = 9;
 
 export default function FavoritesPageContent() {
-  const { favorites, isLoading, error, removeFavorite } = useFavorites();
+  const { favorites, isLoading,
+    //  error, removeFavorite 
+    } = useFavorites();
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(favorites.length / PAGE_SIZE);
@@ -31,7 +33,7 @@ export default function FavoritesPageContent() {
     e.stopPropagation();
 
     const recipeId = recipe.documentId || String(recipe.id);
-    removeFavorite(recipeId);
+    // removeFavorite(recipeId);
   };
 
   if (isLoading && favorites.length > 0) {
@@ -42,15 +44,15 @@ export default function FavoritesPageContent() {
     );
   }
 
-  if (error) {
-    return (
-      <div className={styles.contentContainer}>
-        <ErrorMessage error={error}>
-          <Button onClick={() => window.location.reload()}>Повторить попытку</Button>
-        </ErrorMessage>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className={styles.contentContainer}>
+  //       <ErrorMessage error={error}>
+  //         <Button onClick={() => window.location.reload()}>Повторить попытку</Button>
+  //       </ErrorMessage>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className={styles.favoritesPage}>
@@ -95,7 +97,7 @@ export default function FavoritesPageContent() {
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={handlePageChange}
+                // onPageChange={handlePageChange}
                 className={styles.pagination}
               />
             )}

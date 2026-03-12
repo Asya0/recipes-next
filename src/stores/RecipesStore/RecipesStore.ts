@@ -3,41 +3,99 @@
 // список категорий
 // loading и error
 import { makeAutoObservable, runInAction } from "mobx";
-import { fetchRecipeById } from "@/api/recipesApi";
-import { Recipe } from "@/api/recipes";
+import { fetchRecipeById, fetchRecipes, fetchCategories } from "@/api/recipesApi";
+import { Category, Recipe } from "@/api/recipes";
 
 export class RecipesStore {
-    selectedRecipe: Recipe | null = null;
-    isRecipeLoading = false;
-    recipeError = '';
+  selectedRecipe: Recipe | null = null;
+  isRecipeLoading = false;
+  recipeError = "";
 
-    constructor() {
-        makeAutoObservable(this);
-    }
+  recipes: Recipe[] = [];
+  isLoading = false;
+  error = "";
+  currentPage = 1;
+  totalPages = 1;
 
-    async loadRecipeById(id: string) {
-        this.isRecipeLoading = true;
-        this.recipeError = '';
+  categories: Category[] = [];
+  categoriesLoading = false;
+  categoriesError = '';
 
-        try {
-            const recipe = await fetchRecipeById(id);
+  constructor() {
+    makeAutoObservable(this);
+  }
 
-            runInAction(() => {
-                this.selectedRecipe = recipe;
-            });
-        } catch (error) {
-            runInAction(() => {
-                this.recipeError = "Не удалось загрузить рецепт";
-                this.selectedRecipe = null;
-            })
-        }finally {
-            runInAction(() => {
-                this.isRecipeLoading = false;
-            })
-        }
-    }
-    clearSelectedRecipe() {
+  async loadRecipeById(id: string) {
+    this.isRecipeLoading = true;
+    this.recipeError = "";
+
+    try {
+      const recipe = await fetchRecipeById(id);
+
+      runInAction(() => {
+        this.selectedRecipe = recipe;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.recipeError = "Не удалось загрузить рецепт";
         this.selectedRecipe = null;
-        this.recipeError = '';
+      });
+    } finally {
+      runInAction(() => {
+        this.isRecipeLoading = false;
+      });
     }
+  }
+  clearSelectedRecipe() {
+    this.selectedRecipe = null;
+    this.recipeError = "";
+  }
+
+  async fetchRecipes() {
+    this.isLoading = true;
+    this.error = '';
+
+    try {
+        const response = await fetchRecipes({page: this.currentPage,});
+
+            runInAction(() => {
+                this.recipes = response.data;
+                this.totalPages = response.meta.pagination.pageCount;
+            })
+    } catch(error) {
+        runInAction(()=> {
+            this.error = 'Не удалось загрузить рецепты';
+            this.recipes = [];
+        })
+    } finally {
+        runInAction(() => {
+            this.isLoading = false;
+        })
+    }
+  }
+  async fetchCategories() {
+    this.categoriesLoading = true;
+    this.categoriesError = '';
+
+    try {
+      const categories =await fetchCategories();
+
+      runInAction(() => {
+        this.categories = categories;
+      });
+    } catch(error) {
+      runInAction(() => {
+        this.categoriesError = "Не удалось загрузить категории"
+        this.categories = [];
+      })
+    } finally {
+      runInAction(() => {
+        this.categoriesLoading = false;
+      })
+    }
+  }
+
+  setPage(page: number) {
+    this.currentPage = page;
+  }
 }

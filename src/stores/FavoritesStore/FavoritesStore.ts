@@ -1,11 +1,21 @@
-import { makeObservable, observable, action, computed, runInAction } from 'mobx';
-import { ILocalStore } from '../RootStore/ILocalStore';
-import { Recipe } from '@/api/recipes';
-import { recipesApi } from '@/api/recipesApi';
+import {
+  makeObservable,
+  observable,
+  action,
+  computed,
+  runInAction,
+} from "mobx";
+import { ILocalStore } from "../RootStore/ILocalStore";
+import { Recipe } from "@/api/recipes";
+import { recipesApi } from "@/api/recipesApi";
 
-type PrivateFields = '_favoriteIds' | '_favoriteRecipes' | '_isLoading' | '_error';
+type PrivateFields =
+  | "_favoriteIds"
+  | "_favoriteRecipes"
+  | "_isLoading"
+  | "_error";
 
-const FAVORITE_IDS_KEY = 'favorite_ids';
+const FAVORITE_IDS_KEY = "favorite_ids";
 
 export class FavoritesStore implements ILocalStore {
   private _favoriteIds: string[] = [];
@@ -88,7 +98,9 @@ export class FavoritesStore implements ILocalStore {
     });
 
     if (
-      !this._favoriteRecipes.some((r) => r.documentId === recipeId || String(r.id) === recipeId)
+      !this._favoriteRecipes.some(
+        (r) => r.documentId === recipeId || String(r.id) === recipeId,
+      )
     ) {
       await this.fetchFavoriteRecipes();
     }
@@ -98,7 +110,7 @@ export class FavoritesStore implements ILocalStore {
     runInAction(() => {
       this._favoriteIds = this._favoriteIds.filter((id) => id !== recipeId);
       this._favoriteRecipes = this._favoriteRecipes.filter(
-        (r) => r.documentId !== recipeId && String(r.id) !== recipeId
+        (r) => r.documentId !== recipeId && String(r.id) !== recipeId,
       );
       this._saveToStorage();
     });
@@ -128,7 +140,7 @@ export class FavoritesStore implements ILocalStore {
         this._isLoading = false;
       });
     } catch (error) {
-      console.error('Failed to fetch favorite recipes:', error);
+      console.error("Failed to fetch favorite recipes:", error);
 
       try {
         const recipes: Recipe[] = [];
@@ -147,7 +159,7 @@ export class FavoritesStore implements ILocalStore {
         });
       } catch (fallbackError) {
         runInAction(() => {
-          this._error = 'Не удалось загрузить сохраненные рецепты';
+          this._error = "Не удалось загрузить сохраненные рецепты";
           this._isLoading = false;
         });
       }
@@ -155,14 +167,22 @@ export class FavoritesStore implements ILocalStore {
   }
 
   private _saveToStorage(): void {
+     if (typeof window === "undefined") {
+      return;
+    }
+    
     try {
       localStorage.setItem(FAVORITE_IDS_KEY, JSON.stringify(this._favoriteIds));
     } catch (error) {
-      console.error('Failed to save favorite IDs to localStorage:', error);
+      console.error("Failed to save favorite IDs to localStorage:", error);
     }
   }
 
   loadFromStorage(): void {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     try {
       const saved = localStorage.getItem(FAVORITE_IDS_KEY);
       if (saved) {
@@ -172,7 +192,7 @@ export class FavoritesStore implements ILocalStore {
         });
       }
     } catch (error) {
-      console.error('Failed to load favorite IDs from localStorage:', error);
+      console.error("Failed to load favorite IDs from localStorage:", error);
       runInAction(() => {
         this._favoriteIds = [];
       });

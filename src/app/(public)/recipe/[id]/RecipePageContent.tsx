@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import styles from './RecipePage.module.scss';
-import { BackArrowIcon, Button, ErrorMessage, Loading } from '@/components';
-import { RecipeContent } from './components';
-import { RECIPE_INFO_CONFIG, type RecipeInfoItem } from './config';
-import { useFavorites } from '@/hooks/useFavorites';
-import {observer} from "mobx-react-lite"
-import { useStore } from '@/stores/RootStore/RootStoreContext';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import styles from "./RecipePage.module.scss";
+import { BackArrowIcon, Button, ErrorMessage, Loading } from "@/components";
+import { RecipeContent } from "./components";
+import { RECIPE_INFO_CONFIG, type RecipeInfoItem } from "./config";
+import { useFavorites } from "@/hooks/useFavorites";
+import { observer } from "mobx-react-lite";
+import { useStore } from "@/stores/RootStore/RootStoreContext";
 
 interface Props {
   recipeId: string;
@@ -18,7 +18,7 @@ interface Props {
 const RecipePageContent = observer(({ recipeId }: Props) => {
   const router = useRouter();
 
-  const {recipesStore} = useStore();
+  const { recipesStore } = useStore();
   const { isSaved, toggleSave } = useFavorites();
 
   const recipe = recipesStore.selectedRecipe;
@@ -28,10 +28,10 @@ const RecipePageContent = observer(({ recipeId }: Props) => {
   useEffect(() => {
     recipesStore.loadRecipeById(recipeId);
 
-    return (() => {
+    return () => {
       recipesStore.clearSelectedRecipe();
-    })
-  },[recipeId, recipesStore])
+    };
+  }, [recipeId, recipesStore]);
 
   const handleGoBack = () => {
     router.back();
@@ -64,18 +64,21 @@ const RecipePageContent = observer(({ recipeId }: Props) => {
   return (
     <div className={styles.recipe}>
       <div className={styles.recipe__breadcrumbs}>
-        <div className={styles['recipe__back-arrow']} onClick={handleGoBack}>
+        <div className={styles["recipe__back-arrow"]} onClick={handleGoBack}>
           <BackArrowIcon width={24} height={32} strokeWidth={2} />
         </div>
         <h1 className={styles.recipe__title}>{recipe.name}</h1>
-        <Button onClick={handleSave} className={saved ? styles.savedButton : styles.saveButton}>
-          {saved ? 'Saved' : 'Save'}
+        <Button
+          onClick={handleSave}
+          className={saved ? styles.savedButton : styles.saveButton}
+        >
+          {saved ? "Saved" : "Save"}
         </Button>
       </div>
 
       <div className={styles.recipe__main}>
         {recipe.images?.[0] && (
-          <div className={styles['recipe__image-wrapper']}>
+          <div className={styles["recipe__image-wrapper"]}>
             <Image
               src={recipe.images[0].formats?.small?.url || recipe.images[0].url}
               alt={recipe.name}
@@ -87,11 +90,13 @@ const RecipePageContent = observer(({ recipeId }: Props) => {
           </div>
         )}
 
-        <div className={styles['recipe__info-grid']}>
+        <div className={styles["recipe__info-grid"]}>
           {RECIPE_INFO_CONFIG.map(({ id, label, getValue }: RecipeInfoItem) => (
-            <div key={id} className={styles['recipe__info-item']}>
-              <span className={styles['recipe__info-label']}>{label}</span>
-              <span className={styles['recipe__info-value']}>{getValue(recipe)}</span>
+            <div key={id} className={styles["recipe__info-item"]}>
+              <span className={styles["recipe__info-label"]}>{label}</span>
+              <span className={styles["recipe__info-value"]}>
+                {getValue(recipe)}
+              </span>
             </div>
           ))}
         </div>
@@ -106,5 +111,5 @@ const RecipePageContent = observer(({ recipeId }: Props) => {
       <RecipeContent recipe={recipe} />
     </div>
   );
-})
+});
 export default RecipePageContent;

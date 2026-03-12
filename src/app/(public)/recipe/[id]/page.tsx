@@ -1,6 +1,5 @@
-import { Suspense } from 'react';
-import RecipePageContent from './RecipePageContent';
-import Header from '@/components/Header';
+import Header from "@/components/Header";
+import RecipePageContent from "./RecipePageContent";
 
 interface Props {
   params: {
@@ -8,8 +7,13 @@ interface Props {
   };
 }
 
-export default function RecipePage({ params }: Props) {
+export async function generateMetadata({ params }: Props) {
+  return {
+    title: `Рецепт | Страница рецепта`,
+  };
+}
 
+export default async function RecipePage({ params }: Props) {
   const { id } = params;
 
   if (!id) {
@@ -19,7 +23,7 @@ export default function RecipePage({ params }: Props) {
   return (
     <>
       <Header />
-        <RecipePageContent recipeId={id} />
+      <RecipePageContent recipeId={id} />
     </>
   );
 }
