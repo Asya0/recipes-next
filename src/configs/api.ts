@@ -1,6 +1,6 @@
 export const API_CONFIG = {
-  baseURL: import.meta.env.VITE_STRAPI_URL,
-  token: import.meta.env.VITE_STRAPI_TOKEN,
+  baseURL: process.env.VITE_STRAPI_URL,
+  token: process.env.VITE_STRAPI_TOKEN,
 
   endpoints: {
     recipes: "/api/recipes",
