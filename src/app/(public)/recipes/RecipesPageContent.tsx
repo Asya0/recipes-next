@@ -1,31 +1,155 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
+import { useDebounce } from "@/hooks/useDebounce";
 import styles from "./RecipesPageContent.module.scss";
 import {
-  // Pagination,
   Button,
   Loading,
-  // SearchBar,
+  SearchBar,
   ErrorMessage,
   RecipeCard,
   Pagination,
-  // FiltersBar,
-  // RecipeCard,
+  FiltersBar,
 } from "@/components";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useStore } from "@/stores/RootStore/RootStoreContext";
+import { usePagination } from "@/hooks/usePagination";
+import { useFavorites } from "@/hooks/useFavorites";
 
 const RecipesPageContent = observer(() => {
-  const { recipesStore } = useStore();
+  const { recipesStore, queryParamsStore } = useStore();
+  const [searchInput, setSearchInput] = useState(queryParamsStore.search);
+
+  const { handlePageChange } = usePagination({
+    totalPages: recipesStore.totalPages,
+    currentPage: recipesStore.currentPage,
+    onPageChange: (page) => {
+      recipesStore.setPage(page);
+      queryParamsStore.setPage(page);
+      recipesStore.fetchRecipes({
+        page,
+        search: queryParamsStore.search,
+        categoryId: queryParamsStore.category || null,
+        vegetarian: queryParamsStore.vegetarian,
+      });
+    },
+    scrollToTop: true,
+  });
+  const { isSaved, toggleSave } = useFavorites();
+  const debouncedSearch = useDebounce(searchInput, 500);
+  const router = useRouter();
 
   useEffect(() => {
-    recipesStore.fetchRecipes();
-  }, [recipesStore]);
+    recipesStore.setPage(queryParamsStore.page);
 
-  if (recipesStore.isLoading) {
+    recipesStore.fetchRecipes({
+      page: queryParamsStore.page,
+      search: queryParamsStore.search,
+      categoryId: queryParamsStore.category || null,
+      vegetarian: queryParamsStore.vegetarian,
+    });
+  }, [
+    recipesStore,
+    queryParamsStore.page,
+    queryParamsStore.search,
+    queryParamsStore.category,
+    queryParamsStore.vegetarian,
+  ]);
+
+  useEffect(() => {
+    if (debouncedSearch === queryParamsStore.search) {
+      return;
+    }
+
+    queryParamsStore.setSearch(debouncedSearch);
+    queryParamsStore.setPage(1);
+    recipesStore.setPage(1);
+
+    recipesStore.fetchRecipes({
+      page: 1,
+      search: debouncedSearch,
+      categoryId: queryParamsStore.category || null,
+      vegetarian: queryParamsStore.vegetarian,
+    });
+  }, [debouncedSearch, queryParamsStore, recipesStore]);
+
+  useEffect(() => {
+    setSearchInput(queryParamsStore.search);
+  }, [queryParamsStore.search]);
+
+  const handleFilterChange = (key: string, value: string | boolean | null) => {
+    const nextCategory =
+      key === "categoryId"
+        ? (value as string | null)
+        : queryParamsStore.category || null;
+
+    const nextVegetarian =
+      key === "vegetarian"
+        ? (value as boolean | null)
+        : queryParamsStore.vegetarian;
+
+    if (key === "categoryId") {
+      queryParamsStore.setFilter("category", nextCategory ?? "");
+    }
+
+    if (key === "vegetarian") {
+      queryParamsStore.setFilter("vegetarian", nextVegetarian);
+    }
+
+    queryParamsStore.setPage(1);
+    recipesStore.setPage(1);
+
+    recipesStore.fetchRecipes({
+      page: 1,
+      search: queryParamsStore.search,
+      categoryId: nextCategory,
+      vegetarian: nextVegetarian,
+    });
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+  };
+
+  const handleSearchSubmit = useCallback(() => {
+    queryParamsStore.setSearch(searchInput);
+    queryParamsStore.setPage(1);
+    recipesStore.setPage(1);
+
+    recipesStore.fetchRecipes({
+      page: 1,
+      search: searchInput,
+      categoryId: queryParamsStore.category || null,
+      vegetarian: queryParamsStore.vegetarian,
+    });
+  }, [recipesStore, queryParamsStore, searchInput]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleSearchSubmit();
+      }
+    },
+    [handleSearchSubmit],
+  );
+
+  const handleRandomRecipe = () => {
+    if (recipesStore.recipes.length === 0) {
+      return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * recipesStore.recipes.length);
+    const randomRecipe = recipesStore.recipes[randomIndex];
+
+    router.push(`/recipe/${randomRecipe.documentId}`);
+  };
+
+  if (recipesStore.isLoading && recipesStore.recipes.length === 0) {
     return <Loading size="l" color="accent" />;
   }
   if (recipesStore.error) {
@@ -47,8 +171,8 @@ const RecipesPageContent = observer(() => {
       <div className={styles["recipes-page__banner"]}>
         <Image
           src="/assets/header-bg.png"
-          width={100}
-          height={50}
+          fill
+          priority
           alt="recipes"
           className={styles["recipes-page__bannerImage"]}
         />
@@ -73,30 +197,26 @@ const RecipesPageContent = observer(() => {
         </span>
       </div>
 
+      <div className={styles["recipes-page__actions"]}>
+        <Button onClick={handleRandomRecipe} disabled={recipesStore.recipes.length === 0}>Random recipes</Button>
+      </div>
+
       <div className={styles["recipes-page__content"]}>
-        {/* <SearchBar
+        <SearchBar
           placeholder="Enter dishes"
           value={searchInput}
           onChange={handleSearchChange}
           onSearch={handleSearchSubmit}
           onKeyDown={handleKeyDown}
-        /> */}
+        />
 
-        {/* <FiltersBar filters={} onChange={}/> */}
-
-        {recipesStore.recipes.length > 0 && (
-              <div className={styles["recipes-page__grid"]}>
-                {recipesStore.recipes.map((recipe) => (
-                  <RecipeCard
-                    key={recipe.id}
-                    recipe={recipe}
-                    // imageUrl={recipesStore.getRecipeImageUrl(recipe)}
-                    // isSaved={}
-                    // onSave={}
-                  />
-                ))}
-              </div>
-            )}
+        <FiltersBar
+          filters={{
+            categoryId: queryParamsStore.category || null,
+            vegetarian: queryParamsStore.vegetarian,
+          }}
+          onChange={handleFilterChange}
+        />
 
         {recipesStore.recipes.length === 0 && !recipesStore.isLoading && (
           <div className={styles["recipes-page__notFound"]}>
@@ -104,11 +224,34 @@ const RecipesPageContent = observer(() => {
           </div>
         )}
 
+        {recipesStore.isLoading && recipesStore.recipes.length > 0 && (
+          <div className={styles["recipes-page__loadingOverlay"]}>
+            <Loading size="m" color="accent" />
+          </div>
+        )}
+
+        {recipesStore.recipes.length > 0 && (
+          <div className={styles["recipes-page__grid"]}>
+            {recipesStore.recipes.map((recipe) => (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                imageUrl={
+                  recipe.images?.[0]?.formats?.small?.url ||
+                  recipe.images?.[0]?.url
+                }
+                isSaved={isSaved(recipe.documentId || recipe.id)}
+                onSave={() => toggleSave(recipe)}
+              />
+            ))}
+          </div>
+        )}
+
         {recipesStore.totalPages > 1 && (
           <Pagination
             currentPage={recipesStore.currentPage}
             totalPages={recipesStore.totalPages}
-            // onPageChange={handlePageChange}
+            onPageChange={handlePageChange}
             className={styles["recipes-page__pagination"]}
           />
         )}

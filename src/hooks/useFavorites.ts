@@ -7,7 +7,10 @@ export const useFavorites = () => {
     favorites: favoritesStore.favoriteRecipes,
     savedCount: favoritesStore.savedCount,
     isSaved: favoritesStore.isSaved,
+    removeFavorite: favoritesStore.removeFavorite,
     toggleSave: favoritesStore.toggleSave,
     isLoading: favoritesStore.isLoading,
+    error: favoritesStore.error,
+
   };
 };

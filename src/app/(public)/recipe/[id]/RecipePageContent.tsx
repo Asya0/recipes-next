@@ -68,12 +68,12 @@ const RecipePageContent = observer(({ recipeId }: Props) => {
           <BackArrowIcon width={24} height={32} strokeWidth={2} />
         </div>
         <h1 className={styles.recipe__title}>{recipe.name}</h1>
-        <Button
+        {/* <Button
           onClick={handleSave}
           className={saved ? styles.savedButton : styles.saveButton}
         >
           {saved ? "Saved" : "Save"}
-        </Button>
+        </Button> */}
       </div>
 
       <div className={styles.recipe__main}>

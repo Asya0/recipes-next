@@ -110,6 +110,10 @@ export const fetchRecipeById = async (id: string): Promise<Recipe> => {
 };
 
 export const fetchCategories = async (): Promise<any[]> => {
-  const response = await apiClient.get('/api/categories');
+  const response = await apiClient.get('/api/meal-categories', {
+    params: {
+      populate: '*',
+    }
+  });
   return response.data.data;
 };

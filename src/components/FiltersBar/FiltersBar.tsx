@@ -1,6 +1,6 @@
 'use client';
 
-import { useStore } from '@/stores/RootStore';
+import { useStore } from '@/stores/RootStore/RootStoreContext';
 import styles from './FiltersBar.module.scss';
 import { MultiDropdown, CheckBox, Loading } from '@/components';
 import { useEffect } from 'react';
@@ -11,15 +11,15 @@ interface FiltersBarProps {
     categoryId: string | null;
     vegetarian: boolean | null;
   };
-  onChange: (key: string, value: any) => void;
+  onChange: (key: string, value: string | boolean | null) => void;
 }
 
 export const FiltersBar = observer(({ filters, onChange }: FiltersBarProps) => {
   const { recipesStore  } = useStore();
 
   const categories = recipesStore.categories;
-  const isLoading = recipesStore.isLoading;
-  const error = recipesStore.error;
+  const isLoading = recipesStore.categoriesLoading;
+  const error = recipesStore.categoriesError;
 
   useEffect(() => {
     recipesStore.fetchCategories()
@@ -27,7 +27,7 @@ export const FiltersBar = observer(({ filters, onChange }: FiltersBarProps) => {
 
   const categoryOptions = (categories || []).map((cat) => ({
     key: cat.id.toString(),
-    value: cat.title || cat.name,
+    value: cat.title,
   }));
 
   const selectedCategories = filters.categoryId
@@ -40,13 +40,13 @@ export const FiltersBar = observer(({ filters, onChange }: FiltersBarProps) => {
   };
 
   const handleVegetarianChange = (checked: boolean) => {
-    onChange('vegetarian', checked);
+    onChange('vegetarian', checked ? true : null);
   };
 
   if (isLoading) {
     return (
       <div className={styles['filters-bar']}>
-        <Loading size="s" color="accent" />
+        <Loading size="l" color="accent" />
       </div>
     );
   }
@@ -55,13 +55,12 @@ export const FiltersBar = observer(({ filters, onChange }: FiltersBarProps) => {
     <div className={styles['filters-bar']}>
       <div className={styles['filters-bar__vegetarianRow']}>
         <CheckBox
-          checked={filters.vegetarian || false}
+          checked={filters.vegetarian === true}
           onChange={handleVegetarianChange}
           className={styles['filters-bar__checkbox']}
         />
         <span>Vegetarian</span>
       </div>
-
       <div className={styles['filters-bar__categoryRow']}>
         <MultiDropdown
           options={categoryOptions}

@@ -10,9 +10,9 @@ export { default as ErrorMessage } from './Error/ErrorMessage';
 export { default as BackArrowIcon } from './icons/BackArrowIcon/BackArrowIcon';
 export { default as EquipmentIcon } from './icons/EquipmentIcon/EquipmentIcon';
 export { default as CheckBox } from './CheckBox/CheckBox';
-// export { default as SearchBar } from './recipes/SearchBar/SearchBar';
+export { default as SearchBar } from './recipes/SearchBar/SearchBar';
 export { default as IngredientIcon } from './icons/IngredientIcon/IngredientIcon';
-// export { FiltersBar } from './FiltersBar/FiltersBar';
+export { FiltersBar } from './FiltersBar/FiltersBar';
 export { RecipeCard } from './RecipeCard/RecipeCard';
 
 export type { Option } from './MultiDropdown';

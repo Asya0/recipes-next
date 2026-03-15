@@ -1,10 +1,13 @@
-'use client';
-import React from 'react';
-import cn from 'classnames';
-import CheckIcon from '../icons/CheckIcon';
-import styles from './CheckBox.module.scss';
+"use client";
+import React, { useId } from "react";
+import cn from "classnames";
+import CheckIcon from "../icons/CheckIcon";
+import styles from "./CheckBox.module.scss";
 
-export type CheckBoxProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> & {
+export type CheckBoxProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "onChange"
+> & {
   /** Вызывается при клике на чекбокс */
   onChange: (checked: boolean) => void;
 };
@@ -22,13 +25,15 @@ const CheckBox: React.FC<CheckBoxProps> = ({
     onChange(event.target.checked);
   };
 
-  const checkboxId = id || `checkbox-${Math.random().toString(36).substr(2, 9)}`;
+  const generatedId = useId();
+  const checkboxId = id || generatedId;
+  // const checkboxId = id || `checkbox-${Math.random().toString(36).substr(2, 9)}`;
 
   const checkboxClassName = cn(
     styles.checkbox,
     {
-      [styles['checkbox--checked']]: checked,
-      [styles['checkbox--disabled']]: disabled,
+      [styles["checkbox--checked"]]: checked,
+      [styles["checkbox--disabled"]]: disabled,
     },
     className,
   );
@@ -38,16 +43,22 @@ const CheckBox: React.FC<CheckBoxProps> = ({
       <input
         id={checkboxId}
         type="checkbox"
-        className={styles['checkbox-input']}
+        className={styles["checkbox-input"]}
         checked={checked}
         onChange={handleChange}
         disabled={disabled}
         {...inputProps}
       />
-      <span className={styles['checkbox-custom']}>
-        {checked && <CheckIcon width={40} height={40} color={disabled ? 'secondary' : 'accent'} />}
+      <span className={styles["checkbox-custom"]}>
+        {checked && (
+          <CheckIcon
+            width={40}
+            height={40}
+            color={disabled ? "secondary" : "accent"}
+          />
+        )}
       </span>
-      {children && <span className={styles['checkbox-label']}>{children}</span>}
+      {children && <span className={styles["checkbox-label"]}>{children}</span>}
     </label>
   );
 };

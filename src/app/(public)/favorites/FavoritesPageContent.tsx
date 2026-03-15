@@ -1,17 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './FavoritesPage.module.scss';
 import { Button, Loading, Card, ErrorMessage, Pagination } from '@/components';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePagination } from '@/hooks/usePagination';
+import { Recipe } from '@/api/recipes';
+import { observer } from 'mobx-react-lite';
 
 const PAGE_SIZE = 9;
 
-export default function FavoritesPageContent() {
+const FavoritesPageContent = observer(() => {
   const { favorites, isLoading,
-    //  error, removeFavorite 
+     error, removeFavorite 
     } = useFavorites();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -28,15 +30,21 @@ export default function FavoritesPageContent() {
   const endIndex = startIndex + PAGE_SIZE;
   const currentRecipes = favorites.slice(startIndex, endIndex);
 
-  const handleRemove = async (recipe: any, e: React.MouseEvent) => {
+  useEffect(() => {
+  if (totalPages > 0 && currentPage > totalPages) {
+    setCurrentPage(totalPages);
+  }
+}, [currentPage, totalPages]);
+
+  const handleRemove = async (recipe: Recipe, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     const recipeId = recipe.documentId || String(recipe.id);
-    // removeFavorite(recipeId);
+    removeFavorite(recipeId);
   };
 
-  if (isLoading && favorites.length > 0) {
+  if (isLoading) {
     return (
       <div className={styles.contentContainer}>
         <Loading size="l" color="accent" />
@@ -44,15 +52,15 @@ export default function FavoritesPageContent() {
     );
   }
 
-  // if (error) {
-  //   return (
-  //     <div className={styles.contentContainer}>
-  //       <ErrorMessage error={error}>
-  //         <Button onClick={() => window.location.reload()}>Повторить попытку</Button>
-  //       </ErrorMessage>
-  //     </div>
-  //   );
-  // }
+  if (error) {
+    return (
+      <div className={styles.contentContainer}>
+        <ErrorMessage error={error}>
+          <Button onClick={() => window.location.reload()}>Повторить попытку</Button>
+        </ErrorMessage>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.favoritesPage}>
@@ -72,7 +80,7 @@ export default function FavoritesPageContent() {
         ) : (
           <>
             <div className={styles.recipeGrid}>
-              {currentRecipes.map((recipe: any) => (
+              {currentRecipes.map((recipe: Recipe) => (
                 <Link
                   href={`/recipe/${recipe.documentId}`}
                   key={recipe.id}
@@ -87,7 +95,7 @@ export default function FavoritesPageContent() {
                     title={recipe.name}
                     subtitle={recipe.summary?.replace(/<[^>]*>/g, '')}
                     contentSlot={Math.round(recipe.calories).toString()}
-                    actionSlot={<Button onClick={(e) => handleRemove(recipe, e)}>Удалить</Button>}
+                    actionSlot={<Button onClick={(e) => handleRemove(recipe, e)} className={styles.removeButton}>Remove</Button>}
                   />
                 </Link>
               ))}
@@ -97,7 +105,7 @@ export default function FavoritesPageContent() {
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                // onPageChange={handlePageChange}
+                onPageChange={handlePageChange}
                 className={styles.pagination}
               />
             )}
@@ -106,4 +114,6 @@ export default function FavoritesPageContent() {
       </div>
     </div>
   );
-}
+})
+
+export default FavoritesPageContent;

@@ -29,6 +29,8 @@ export class QueryParamsStore implements ILocalStore {
 
       search: computed,
       page: computed,
+      category: computed,
+      vegetarian: computed,
       filters: computed,
 
       setSearch: action.bound,
@@ -42,6 +44,15 @@ export class QueryParamsStore implements ILocalStore {
 
   get search(): string {
     return this._search;
+  }
+
+  get category(): string {
+    return this._category;
+  }
+
+  get vegetarian(): boolean | null {
+    if (this._vegetarian === "true") return true;
+    return null;
   }
 
   get page(): number {
@@ -67,19 +78,19 @@ export class QueryParamsStore implements ILocalStore {
     this.updateUrl();
   }
 
-  setFilter(key: string, value: string): void {
+  setFilter(key: string, value: string | boolean | null): void {
     switch (key) {
       case "category":
-        this._category = value;
+        this._category = typeof value === "string" ? value : "";
         break;
       case "vegetarian":
-        this._vegetarian = value;
+        this._vegetarian = value === true ? ' true' : '';
         break;
       case "minRating":
-        this._minRating = value;
+        this._minRating = typeof value === 'string' ? value : '';
         break;
       case "maxTime":
-        this._maxTime = value;
+        this._maxTime = typeof value === 'string' ? value : '';
         break;
       default:
         console.warn(`Unknown filter key: ${key}`);

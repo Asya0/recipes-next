@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.3.5",
+    "@types/qs": "^6.15.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",

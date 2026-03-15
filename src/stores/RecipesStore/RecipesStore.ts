@@ -1,9 +1,9 @@
-// список рецептов
-// один выбранный рецепт
-// список категорий
-// loading и error
 import { makeAutoObservable, runInAction } from "mobx";
-import { fetchRecipeById, fetchRecipes, fetchCategories } from "@/api/recipesApi";
+import {
+  fetchRecipeById,
+  fetchRecipes,
+  fetchCategories,
+} from "@/api/recipesApi";
 import { Category, Recipe } from "@/api/recipes";
 
 export class RecipesStore {
@@ -19,7 +19,7 @@ export class RecipesStore {
 
   categories: Category[] = [];
   categoriesLoading = false;
-  categoriesError = '';
+  categoriesError = "";
 
   constructor() {
     makeAutoObservable(this);
@@ -51,47 +51,57 @@ export class RecipesStore {
     this.recipeError = "";
   }
 
-  async fetchRecipes() {
+  async fetchRecipes(params?: {
+    page?: number;
+    search?: string;
+    categoryId?: string | null;
+    vegetarian?: boolean | null;
+  }) {
     this.isLoading = true;
-    this.error = '';
+    this.error = "";
 
     try {
-        const response = await fetchRecipes({page: this.currentPage,});
-
-            runInAction(() => {
-                this.recipes = response.data;
-                this.totalPages = response.meta.pagination.pageCount;
-            })
-    } catch(error) {
-        runInAction(()=> {
-            this.error = 'Не удалось загрузить рецепты';
-            this.recipes = [];
-        })
+      const response = await fetchRecipes({
+        page: params?.page ?? this.currentPage,
+        search: params?.search ?? "",
+        categoryId: params?.categoryId ?? null,
+        vegetarian: params?.vegetarian ?? null,
+      });
+      
+      runInAction(() => {
+        this.recipes = response.data;
+        this.totalPages = response.meta.pagination.pageCount;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.error = "Не удалось загрузить рецепты";
+        this.recipes = [];
+      });
     } finally {
-        runInAction(() => {
-            this.isLoading = false;
-        })
+      runInAction(() => {
+        this.isLoading = false;
+      });
     }
   }
   async fetchCategories() {
     this.categoriesLoading = true;
-    this.categoriesError = '';
+    this.categoriesError = "";
 
     try {
-      const categories =await fetchCategories();
+      const categories = await fetchCategories();
 
       runInAction(() => {
         this.categories = categories;
       });
-    } catch(error) {
+    } catch (error) {
       runInAction(() => {
-        this.categoriesError = "Не удалось загрузить категории"
+        this.categoriesError = "Не удалось загрузить категории";
         this.categories = [];
-      })
+      });
     } finally {
       runInAction(() => {
         this.categoriesLoading = false;
-      })
+      });
     }
   }
 

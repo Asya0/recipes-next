@@ -11,6 +11,7 @@
     width: 100%;
     max-height: 400px;
     overflow: hidden;
+    min-height: 400px;
 
     @include desktop-only {
       max-height: 350px;
@@ -86,14 +87,19 @@
 
   &__infoUnderlined {
     text-decoration: underline;
-    text-decoration-color: $primary-color; 
-    text-underline-offset: 2px; 
-    text-decoration-thickness: 1px; 
+    text-decoration-color: $primary-color;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
 
     @include tablet-only {
       text-underline-offset: 1px;
     }
   }
+  &__actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
 
   &__content {
     margin: 0 auto;
@@ -121,11 +127,11 @@
   }
 
   .savedButton {
-  background-color: $button-primary-bg-hover !important;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s
-}
+    background-color: $button-primary-bg-hover !important;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
 
   &__grid {
     display: grid;
@@ -149,7 +155,7 @@
     }
 
     @include phone-only {
-      grid-template-columns: 1fr; 
+      grid-template-columns: 1fr;
       gap: 16px;
       max-width: 400px;
       margin-left: auto;
@@ -170,7 +176,7 @@
     color: inherit;
     display: block;
     height: 100%;
-    
+
     @include phone-only {
       width: 100%;
     }

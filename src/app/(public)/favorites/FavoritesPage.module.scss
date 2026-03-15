@@ -112,12 +112,13 @@
 }
 
 .removeButton {
-  background-color: #dc3545 !important;
+  background-color: $accent-color;
   color: white !important;
   border: none !important;
+  cursor: pointer;
   
   &:hover {
-    background-color: #c82333 !important;
+    background-color: $accent-color;
   }
 }
 
