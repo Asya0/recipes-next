@@ -1,20 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import styles from './FavoritesPage.module.scss';
-import { Button, Loading, Card, ErrorMessage, Pagination } from '@/components';
-import { useFavorites } from '@/hooks/useFavorites';
-import { usePagination } from '@/hooks/usePagination';
-import { Recipe } from '@/api/recipes';
-import { observer } from 'mobx-react-lite';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import styles from "./FavoritesPage.module.scss";
+import { Button, Loading, Card, ErrorMessage, Pagination } from "@/components";
+import { useFavorites } from "@/hooks/useFavorites";
+import { usePagination } from "@/hooks/usePagination";
+import { Recipe } from "@/api/recipes";
+import { observer } from "mobx-react-lite";
 
 const PAGE_SIZE = 9;
 
 const FavoritesPageContent = observer(() => {
-  const { favorites, isLoading,
-     error, removeFavorite 
-    } = useFavorites();
+  const { favorites, isLoading, error, removeFavorite } = useFavorites();
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(favorites.length / PAGE_SIZE);
@@ -31,10 +29,10 @@ const FavoritesPageContent = observer(() => {
   const currentRecipes = favorites.slice(startIndex, endIndex);
 
   useEffect(() => {
-  if (totalPages > 0 && currentPage > totalPages) {
-    setCurrentPage(totalPages);
-  }
-}, [currentPage, totalPages]);
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const handleRemove = async (recipe: Recipe, e: React.MouseEvent) => {
     e.preventDefault();
@@ -56,7 +54,9 @@ const FavoritesPageContent = observer(() => {
     return (
       <div className={styles.contentContainer}>
         <ErrorMessage error={error}>
-          <Button onClick={() => window.location.reload()}>Повторить попытку</Button>
+          <Button onClick={() => window.location.reload()}>
+            Try again
+          </Button>
         </ErrorMessage>
       </div>
     );
@@ -65,16 +65,20 @@ const FavoritesPageContent = observer(() => {
   return (
     <div className={styles.favoritesPage}>
       <div className={styles.contentContainer}>
-        <h1 className={styles.pageTitle}>Сохраненные рецепты ({favorites.length})</h1>
+        <h1 className={styles.pageTitle}>
+          Favorite recipes ({favorites.length})
+        </h1>
 
         {favorites.length === 0 ? (
           <div className={styles.emptyState}>
-            <h2 className={styles.emptyTitle}>У вас пока нет сохраненных рецептов</h2>
+            <h2 className={styles.emptyTitle}>
+             You don't have any saved recipes yet.
+            </h2>
             <p className={styles.emptyText}>
-              Сохраняйте понравившиеся рецепты, чтобы быстро находить их потом
+             Save your favorite recipes to find them quickly later.
             </p>
             <Link href="/recipes">
-              <Button className={styles.exploreButton}>Найти рецепты</Button>
+              <Button className={styles.exploreButton}>Find recipes</Button>
             </Link>
           </div>
         ) : (
@@ -84,36 +88,46 @@ const FavoritesPageContent = observer(() => {
                 <Link
                   href={`/recipe/${recipe.documentId}`}
                   key={recipe.id}
-                  className={styles.recipeCardLink}>
+                  className={styles.recipeCardLink}
+                >
                   <Card
                     image={
                       recipe.images?.[0]?.formats?.small?.url ||
                       recipe.images?.[0]?.url ||
-                      '/placeholder.jpg'
+                      "/placeholder.jpg"
                     }
                     cookingTime={recipe.cookingTime}
                     title={recipe.name}
-                    subtitle={recipe.summary?.replace(/<[^>]*>/g, '')}
+                    subtitle={recipe.summary?.replace(/<[^>]*>/g, "")}
                     contentSlot={Math.round(recipe.calories).toString()}
-                    actionSlot={<Button onClick={(e) => handleRemove(recipe, e)} className={styles.removeButton}>Remove</Button>}
+                    actionSlot={
+                      <Button
+                        onClick={(e) => handleRemove(recipe, e)}
+                        className={styles.removeButton}
+                      >
+                        Remove
+                      </Button>
+                    }
                   />
                 </Link>
               ))}
             </div>
 
             {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                className={styles.pagination}
-              />
+              <div className={styles["paginationSticky"]}>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  className={styles.pagination}
+                />
+              </div>
             )}
           </>
         )}
       </div>
     </div>
   );
-})
+});
 
 export default FavoritesPageContent;

@@ -108,7 +108,6 @@
   text-decoration: none;
   color: inherit;
   transition: transform 0.2s ease;
-
 }
 
 .removeButton {
@@ -116,16 +115,35 @@
   color: white !important;
   border: none !important;
   cursor: pointer;
-  
+
   &:hover {
     background-color: $accent-color;
   }
 }
 
+.paginationSticky {
+  position: sticky;
+  bottom: 16px;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  pointer-events: none;
+}
+
+.pagination {
+  margin-top: 40px;
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  padding: 8px 12px;
+}
 
 .skeletonCard {
-  background: #f0f0f0;
-  border-radius: 8px;
+  // background: #f0f0f0;
+  // border-radius: 8px;
   overflow: hidden;
   animation: pulse 1.5s ease-in-out infinite;
 }

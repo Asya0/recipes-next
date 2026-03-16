@@ -84,7 +84,7 @@ export class QueryParamsStore implements ILocalStore {
         this._category = typeof value === "string" ? value : "";
         break;
       case "vegetarian":
-        this._vegetarian = value === true ? ' true' : '';
+        this._vegetarian = value === true ? 'true' : '';
         break;
       case "minRating":
         this._minRating = typeof value === 'string' ? value : '';

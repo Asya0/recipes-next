@@ -4,7 +4,7 @@ import {
   fetchRecipes,
   fetchCategories,
 } from "@/api/recipesApi";
-import { Category, Recipe } from "@/api/recipes";
+import { Category, Pagination, Recipe, RecipesResponse } from "@/api/recipes";
 
 export class RecipesStore {
   selectedRecipe: Recipe | null = null;
@@ -46,6 +46,35 @@ export class RecipesStore {
       });
     }
   }
+
+  setSelectedRecipe(recipe: Recipe) {
+    this.selectedRecipe = recipe;
+    this.recipeError = "";
+    this.isRecipeLoading = false;
+  }
+
+  setInitialRecipes(data: RecipesResponse) {
+    this.recipes = data.data;
+    this.totalPages = data.meta.pagination.pageCount;
+    this.error = "";
+    this.isLoading = false;
+  }
+
+  setInitialData(data: {
+    recipes: Recipe[];
+    pagination?: Pagination;
+    categories: Category[];
+  }) {
+    this.recipes = data.recipes;
+    this.totalPages = data.pagination?.pageCount ?? 1;
+    this.currentPage = data.pagination?.page ?? 1;
+    this.categories = data.categories;
+    this.error = "";
+    this.categoriesError = "";
+    this.isLoading = false;
+    this.categoriesLoading = false;
+  }
+
   clearSelectedRecipe() {
     this.selectedRecipe = null;
     this.recipeError = "";
@@ -67,7 +96,7 @@ export class RecipesStore {
         categoryId: params?.categoryId ?? null,
         vegetarian: params?.vegetarian ?? null,
       });
-      
+
       runInAction(() => {
         this.recipes = response.data;
         this.totalPages = response.meta.pagination.pageCount;

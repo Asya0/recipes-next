@@ -96,10 +96,10 @@
     }
   }
   &__actions {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-}
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
 
   &__content {
     margin: 0 auto;
@@ -181,9 +181,24 @@
       width: 100%;
     }
   }
+  &__paginationSticky {
+    position: sticky;
+    bottom: 16px;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+    pointer-events: none;
+  }
 
   &__pagination {
     margin-top: 40px;
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    padding: 8px 12px;
 
     @include tablet-lg-only {
       margin-top: 35px;

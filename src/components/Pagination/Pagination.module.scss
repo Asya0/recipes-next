@@ -1,17 +1,18 @@
 @use "@/styles/variables" as *;
+
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 48px 0;
+  margin: 10px 0;
   flex-wrap: wrap;
   gap: 8px;
 }
 
 .paginationButton {
   cursor: pointer;
-  border-radius: 0px;
-  transition: all 0.3s;
+  border-radius: 9px;
+  transition: all 0.25s ease;
   font-size: 14px;
   background: none;
   border: none;
@@ -19,20 +20,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-color: $primary-color;
-  
+  color: $primary-color;
+
   &:hover:not(:disabled) {
     background: $accent-color;
     color: white;
   }
-  
+
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
-    background: none;
-    color: $button-primary-bg-disabled
+    color: $button-primary-bg-disabled;
   }
-  
+
   svg {
     width: 20px;
     height: 20px;
@@ -45,7 +45,7 @@ color: $primary-color;
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .pageButton {
@@ -53,63 +53,63 @@ color: $primary-color;
   height: 40px;
   padding: 0;
   color: $primary-color;
-  background: none;
-  border: none;
+  background: white;
+  border: 1px solid rgba($primary-color, 0.1);
   cursor: pointer;
-  border-radius: 0px;
-  transition: all 0.3s;
-  font-size: 18px;
+  border-radius: 9px;
+  transition: all 0.25s ease;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   &:hover:not(:disabled) {
     background: $accent-color;
     color: white;
     border-color: $accent-color;
   }
-  
+
   &.activePage {
     background: $accent-color;
     color: white;
     border-color: $accent-color;
+    font-weight: 600;
   }
-  
+
   &.dots {
     border: none;
     cursor: default;
     background: none;
-    
+
     &:hover {
       background: transparent;
       color: $primary-color;
     }
   }
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background: none;
   }
 }
 
 @media (max-width: 768px) {
   .pagination {
-    gap: 4px;
+    gap: 6px;
   }
-  
+
   .paginationButton {
     padding: 6px;
-    
+
     svg {
       width: 18px;
       height: 18px;
     }
   }
-  
+
   .pageButton {
-    min-width: 32px;
-    height: 32px;
-    font-size: 16px;
+    min-width: 34px;
+    height: 34px;
+    font-size: 14px;
   }
 }

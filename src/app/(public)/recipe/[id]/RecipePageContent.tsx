@@ -1,46 +1,41 @@
 "use client";
 
 import { useEffect } from "react";
+import DOMPurify from "isomorphic-dompurify"
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import styles from "./RecipePage.module.scss";
 import { BackArrowIcon, Button, ErrorMessage, Loading } from "@/components";
 import { RecipeContent } from "./components";
 import { RECIPE_INFO_CONFIG, type RecipeInfoItem } from "./config";
-import { useFavorites } from "@/hooks/useFavorites";
 import { observer } from "mobx-react-lite";
 import { useStore } from "@/stores/RootStore/RootStoreContext";
+import { Recipe } from "@/api/recipes";
 
 interface Props {
   recipeId: string;
+  initialRecipe: Recipe;
 }
 
-const RecipePageContent = observer(({ recipeId }: Props) => {
+const RecipePageContent = observer(({ recipeId, initialRecipe }: Props) => {
   const router = useRouter();
 
   const { recipesStore } = useStore();
-  const { isSaved, toggleSave } = useFavorites();
 
   const recipe = recipesStore.selectedRecipe;
   const isLoading = recipesStore.isRecipeLoading;
   const error = recipesStore.recipeError;
 
   useEffect(() => {
-    recipesStore.loadRecipeById(recipeId);
+    recipesStore.setSelectedRecipe(initialRecipe);
 
     return () => {
       recipesStore.clearSelectedRecipe();
     };
-  }, [recipeId, recipesStore]);
+  }, [initialRecipe, recipesStore]);
 
   const handleGoBack = () => {
     router.back();
-  };
-
-  const handleSave = () => {
-    if (recipe) {
-      toggleSave(recipe);
-    }
   };
 
   if (isLoading) {
@@ -50,16 +45,32 @@ const RecipePageContent = observer(({ recipeId }: Props) => {
   if (error) {
     return (
       <ErrorMessage error={error}>
-        <Button onClick={handleGoBack}>Вернуться назад</Button>
+        <Button onClick={handleGoBack}>Back</Button>
       </ErrorMessage>
     );
   }
 
   if (!recipe) {
-    return <div className={styles.recipe__notFound}>Рецепт не найден</div>;
+    return <div className={styles.recipe__notFound}>Recipe not found</div>;
   }
 
-  const saved = isSaved(recipe.id);
+  const safeSummary = recipe.summary
+    ? DOMPurify.sanitize(recipe.summary, {
+        ALLOWED_TAGS: [
+          "b",
+          "strong",
+          "i",
+          "em",
+          "p",
+          "br",
+          "ul",
+          "ol",
+          "li",
+          "a",
+        ],
+        ALLOWED_ATTR: ["href", "target", "rel"],
+      })
+    : "";
 
   return (
     <div className={styles.recipe}>
@@ -68,12 +79,6 @@ const RecipePageContent = observer(({ recipeId }: Props) => {
           <BackArrowIcon width={24} height={32} strokeWidth={2} />
         </div>
         <h1 className={styles.recipe__title}>{recipe.name}</h1>
-        {/* <Button
-          onClick={handleSave}
-          className={saved ? styles.savedButton : styles.saveButton}
-        >
-          {saved ? "Saved" : "Save"}
-        </Button> */}
       </div>
 
       <div className={styles.recipe__main}>
@@ -104,7 +109,7 @@ const RecipePageContent = observer(({ recipeId }: Props) => {
 
       {recipe.summary && (
         <div className={styles.recipe__description}>
-          <div dangerouslySetInnerHTML={{ __html: recipe.summary }} />
+          <div dangerouslySetInnerHTML={{ __html: safeSummary }} />
         </div>
       )}
 

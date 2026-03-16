@@ -6,12 +6,13 @@ import Text from '../Text';
 import styles from './Card.module.scss';
 import Icon from '../icons/Icon';
 import TimerIcon from '../icons/TimerIcon/TimerIcon';
+import Image from 'next/image';
 
 export type CardProps = {
   /** Дополнительный classname */
   className?: string;
   /** URL изображения */
-  image?: string;
+  image: string;
   /** Время приготовления */
   cookingTime: number;
   /** Слот над заголовком */
@@ -50,7 +51,7 @@ const Card: React.FC<CardProps> = ({
   return (
     <div className={cardClassName} onClick={onClick}>
       <div className={styles['card-header']}>
-        <img src={image} alt="" className={styles['card-image']} />
+        <Image src={image} fill alt="" className={styles['card-image']} />
       </div>
       <div className={styles['card-body']}>
         <div className={styles['card-text-content']}>

@@ -1,3 +1,4 @@
+"use client";
 import {
   makeObservable,
   observable,
@@ -120,6 +121,7 @@ export class FavoritesStore implements ILocalStore {
     if (this._favoriteIds.length === 0) {
       runInAction(() => {
         this._favoriteRecipes = [];
+        this._error = null;
         this._isLoading = false;
       });
       return;
@@ -137,40 +139,26 @@ export class FavoritesStore implements ILocalStore {
 
       runInAction(() => {
         this._favoriteRecipes = response.data;
-        this._isLoading = false;
       });
     } catch (error) {
       console.error("Failed to fetch favorite recipes:", error);
 
-      try {
-        const recipes: Recipe[] = [];
-        for (const id of this._favoriteIds) {
-          try {
-            const recipe = await recipesApi.getRecipeById(id);
-            recipes.push(recipe);
-          } catch (e) {
-            console.error(`Failed to fetch recipe ${id}:`, e);
-          }
-        }
-
-        runInAction(() => {
-          this._favoriteRecipes = recipes;
-          this._isLoading = false;
-        });
-      } catch (fallbackError) {
-        runInAction(() => {
-          this._error = "Не удалось загрузить сохраненные рецепты";
-          this._isLoading = false;
-        });
-      }
+      runInAction(() => {
+        this._favoriteRecipes = [];
+        this._error = "Failed to reload favorite recipes";
+      });
+    } finally {
+      runInAction(() => {
+        this._isLoading = false;
+      });
     }
   }
 
   private _saveToStorage(): void {
-     if (typeof window === "undefined") {
+    if (typeof window === "undefined") {
       return;
     }
-    
+
     try {
       localStorage.setItem(FAVORITE_IDS_KEY, JSON.stringify(this._favoriteIds));
     } catch (error) {
