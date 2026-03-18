@@ -27,7 +27,6 @@ const CheckBox: React.FC<CheckBoxProps> = ({
 
   const generatedId = useId();
   const checkboxId = id || generatedId;
-  // const checkboxId = id || `checkbox-${Math.random().toString(36).substr(2, 9)}`;
 
   const checkboxClassName = cn(
     styles.checkbox,

@@ -28,7 +28,11 @@ interface Props {
 }
 
 const RecipesPageContent = observer(
-  ({ initialRecipes = [], initialPagination, initialCategories = [] }: Props) => {
+  ({
+    initialRecipes = [],
+    initialPagination,
+    initialCategories = [],
+  }: Props) => {
     const { recipesStore, queryParamsStore } = useStore();
     const [searchInput, setSearchInput] = useState(queryParamsStore.search);
 
@@ -51,6 +55,7 @@ const RecipesPageContent = observer(
         categories: initialCategories,
       });
     }, []);
+
 
     useEffect(() => {
       const hasActiveQuery =
