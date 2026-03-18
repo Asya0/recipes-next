@@ -1,14 +1,37 @@
-@use './Roboto/fonts';
-@use './variables';
+@use "./Roboto/fonts";
+@use "./variables";
+
+:root {
+  --bg-color: #ffffff;
+  --text-color: #1f1f1f;
+  --card-bg: #ffffff;
+  --border-color: #e5e5e5;
+}
+
+body[data-theme='dark'] {
+  --bg-color: #181311;
+  --text-color: #f5ede8;
+  --card-bg: #241c19;
+  --border-color: #3a2f2a;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
 
 html,
 body {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   margin: 0;
   padding: 0;
-background-color: #f7e8d7;
-
+  // background-color: var(--bg-color);
+  color: var(--text-color);
 }
+
 
 * {
   box-sizing: border-box;

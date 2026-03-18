@@ -58,7 +58,7 @@
     margin: 0 auto;
     padding: 0 20px;
     text-align: center;
-    color: #333;
+     color: var(--text-color);
     font-size: 18px;
     line-height: 1.5;
     max-width: 800px;
@@ -194,10 +194,8 @@
   &__pagination {
     margin-top: 40px;
     pointer-events: auto;
-    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(8px);
     border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     padding: 8px 12px;
 
     @include tablet-lg-only {

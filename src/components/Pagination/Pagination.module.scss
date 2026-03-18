@@ -4,7 +4,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 10px 0;
   flex-wrap: wrap;
   gap: 8px;
 }
@@ -12,19 +11,25 @@
 .paginationButton {
   cursor: pointer;
   border-radius: 9px;
-  transition: all 0.25s ease;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.2s ease;
   font-size: 14px;
-  background: none;
-  border: none;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: $primary-color;
+  color: var(--text-color);
 
   &:hover:not(:disabled) {
     background: $accent-color;
     color: white;
+    border-color: $accent-color;
+    transform: translateY(-1px);
   }
 
   &:disabled {
@@ -52,12 +57,16 @@
   min-width: 40px;
   height: 40px;
   padding: 0;
-  color: $primary-color;
-  background: white;
-  border: 1px solid rgba($primary-color, 0.1);
+  color: var(--text-color);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   cursor: pointer;
   border-radius: 9px;
-  transition: all 0.25s ease;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.2s ease;
   font-size: 16px;
   display: flex;
   align-items: center;
@@ -67,6 +76,7 @@
     background: $accent-color;
     color: white;
     border-color: $accent-color;
+    transform: translateY(-1px);
   }
 
   &.activePage {
@@ -79,11 +89,12 @@
   &.dots {
     border: none;
     cursor: default;
-    background: none;
+    background: transparent;
 
     &:hover {
       background: transparent;
-      color: $primary-color;
+      color: var(--text-color);
+      transform: none;
     }
   }
 
