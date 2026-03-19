@@ -6,6 +6,7 @@
   --text-color: #1f1f1f;
   --card-bg: #ffffff;
   --border-color: #e5e5e5;
+  --description-bg: #f7e8d7;
 }
 
 body[data-theme='dark'] {
@@ -13,6 +14,7 @@ body[data-theme='dark'] {
   --text-color: #f5ede8;
   --card-bg: #241c19;
   --border-color: #3a2f2a;
+  --description-bg: #2b211d;
 }
 
 body {
@@ -28,7 +30,6 @@ body {
   font-family: "Roboto";
   margin: 0;
   padding: 0;
-  // background-color: var(--bg-color);
   color: var(--text-color);
 }
 

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
+import { motion, AnimatePresence } from "motion/react";
 import { useDebounce } from "@/hooks/useDebounce";
 import styles from "./RecipesPageContent.module.scss";
 import {
@@ -56,18 +57,7 @@ const RecipesPageContent = observer(
       });
     }, []);
 
-
     useEffect(() => {
-      const hasActiveQuery =
-        queryParamsStore.search ||
-        queryParamsStore.category ||
-        queryParamsStore.vegetarian !== null ||
-        queryParamsStore.page > 1;
-
-      if (!hasActiveQuery) {
-        return;
-      }
-
       recipesStore.setPage(queryParamsStore.page);
 
       recipesStore.fetchRecipes({
@@ -144,9 +134,6 @@ const RecipesPageContent = observer(
       router.push(`/recipe/${randomRecipe.documentId}`);
     };
 
-    if (recipesStore.isLoading && recipesStore.recipes.length === 0) {
-      return <Loading size="l" color="accent" />;
-    }
     if (recipesStore.error) {
       return (
         <ErrorMessage error={recipesStore.error}>
@@ -225,43 +212,53 @@ const RecipesPageContent = observer(
 
           {recipesStore.recipes.length === 0 && !recipesStore.isLoading && (
             <div className={styles["recipes-page__notFound"]}>
-              По вашему запросу ничего не найдено :с
+              Nothing was found for your query :с
             </div>
           )}
 
-          {recipesStore.isLoading && recipesStore.recipes.length > 0 && (
-            <div className={styles["recipes-page__loadingOverlay"]}>
-              <Loading size="m" color="accent" />
-            </div>
-          )}
-
-          {recipesStore.recipes.length > 0 && (
-            <div className={styles["recipes-page__grid"]}>
+          <motion.div layout className={styles["recipes-page__grid"]}>
+            <AnimatePresence mode="popLayout">
               {recipesStore.recipes.map((recipe) => (
-                <RecipeCard
+                <motion.div
                   key={recipe.id}
-                  recipe={recipe}
-                  imageUrl={
-                    recipe.images?.[0]?.formats?.small?.url ||
-                    recipe.images?.[0]?.url
-                  }
-                  isSaved={isSaved(recipe.documentId || recipe.id)}
-                  onSave={() => toggleSave(recipe)}
-                />
+                  layout
+                  initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                  transition={{ duration: 0.22 }}
+                >
+                  <RecipeCard
+                    recipe={recipe}
+                    imageUrl={
+                      recipe.images?.[0]?.formats?.small?.url ||
+                      recipe.images?.[0]?.url
+                    }
+                    isSaved={isSaved(recipe.documentId || recipe.id)}
+                    onSave={() => toggleSave(recipe)}
+                  />
+                </motion.div>
               ))}
-            </div>
-          )}
+            </AnimatePresence>
+          </motion.div>
 
-          {recipesStore.totalPages > 1 && (
-            <div className={styles["recipes-page__paginationSticky"]}>
-              <Pagination
-                currentPage={recipesStore.currentPage}
-                totalPages={recipesStore.totalPages}
-                onPageChange={handlePageChange}
-                className={styles["recipes-page__pagination"]}
-              />
-            </div>
-          )}
+          <AnimatePresence>
+            {recipesStore.totalPages > 1 && (
+              <motion.div
+                className={styles["recipes-page__paginationSticky"]}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.25 }}
+              >
+                <Pagination
+                  currentPage={recipesStore.currentPage}
+                  totalPages={recipesStore.totalPages}
+                  onPageChange={handlePageChange}
+                  className={styles["recipes-page__pagination"]}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     );

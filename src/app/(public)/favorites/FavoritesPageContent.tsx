@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import styles from "./FavoritesPage.module.scss";
 import { Button, Loading, Card, ErrorMessage, Pagination } from "@/components";
@@ -54,9 +55,7 @@ const FavoritesPageContent = observer(() => {
     return (
       <div className={styles.contentContainer}>
         <ErrorMessage error={error}>
-          <Button onClick={() => window.location.reload()}>
-            Try again
-          </Button>
+          <Button onClick={() => window.location.reload()}>Try again</Button>
         </ErrorMessage>
       </div>
     );
@@ -72,10 +71,10 @@ const FavoritesPageContent = observer(() => {
         {favorites.length === 0 ? (
           <div className={styles.emptyState}>
             <h2 className={styles.emptyTitle}>
-             You don't have any saved recipes yet.
+              You don't have any saved recipes yet.
             </h2>
             <p className={styles.emptyText}>
-             Save your favorite recipes to find them quickly later.
+              Save your favorite recipes to find them quickly later.
             </p>
             <Link href="/recipes">
               <Button className={styles.exploreButton}>Find recipes</Button>
@@ -84,33 +83,45 @@ const FavoritesPageContent = observer(() => {
         ) : (
           <>
             <div className={styles.recipeGrid}>
-              {currentRecipes.map((recipe: Recipe) => (
-                <Link
-                  href={`/recipe/${recipe.documentId}`}
-                  key={recipe.id}
-                  className={styles.recipeCardLink}
-                >
-                  <Card
-                    image={
-                      recipe.images?.[0]?.formats?.small?.url ||
-                      recipe.images?.[0]?.url ||
-                      "/placeholder.jpg"
-                    }
-                    cookingTime={recipe.cookingTime}
-                    title={recipe.name}
-                    subtitle={recipe.summary?.replace(/<[^>]*>/g, "")}
-                    contentSlot={Math.round(recipe.calories).toString()}
-                    actionSlot={
-                      <Button
-                        onClick={(e) => handleRemove(recipe, e)}
-                        className={styles.removeButton}
-                      >
-                        Remove
-                      </Button>
-                    }
-                  />
-                </Link>
-              ))}
+              <AnimatePresence mode="popLayout">
+                {currentRecipes.map((recipe) => (
+                  <motion.div
+                    key={recipe.id}
+                    layout
+                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                    transition={{ duration: 0.22 }}
+                  >
+                    <Link
+                      href={`/recipe/${recipe.documentId}`}
+                      className={styles.recipeCardLink}
+                    >
+                      <Card
+                        image={
+                          recipe.images?.[0]?.formats?.small?.url ||
+                          recipe.images?.[0]?.url ||
+                          "/placeholder.jpg"
+                        }
+                        cookingTime={recipe.cookingTime}
+                        title={recipe.name}
+                        subtitle={recipe.summary?.replace(/<[^>]*>/g, "")}
+                        contentSlot={Math.round(recipe.calories).toString()}
+                        actionSlot={
+                          <motion.div whileTap={{ scale: 0.9 }}>
+                            <Button
+                              onClick={(e) => handleRemove(recipe, e)}
+                              className={styles.removeButton}
+                            >
+                              Remove
+                            </Button>
+                          </motion.div>
+                        }
+                      />
+                    </Link>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
 
             {totalPages > 1 && (
