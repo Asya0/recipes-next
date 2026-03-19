@@ -1,11 +1,12 @@
-'use client';
-import * as React from 'react';
-import cn from 'classnames';
-import useOutsideClick from '@/hooks/useOutsideClick';
-import Input from '@/components/Input/Input';
-import ArrowDownIcon from '@/components/icons/ArrowDownIcon/ArrowDownIcon';
-import Text from '@/components/Text/Text';
-import styles from './MultiDropdown.module.scss';
+"use client";
+import * as React from "react";
+import cn from "classnames";
+import { AnimatePresence, motion } from "motion/react";
+import useOutsideClick from "@/hooks/useOutsideClick";
+import Input from "@/components/Input/Input";
+import ArrowDownIcon from "@/components/icons/ArrowDownIcon/ArrowDownIcon";
+import Text from "@/components/Text/Text";
+import styles from "./MultiDropdown.module.scss";
 
 export type Option = {
   /** Ключ варианта, используется для отправки на бек/использования в коде */
@@ -38,7 +39,7 @@ const MultiDropdown: React.FC<MultiDropdownProps> = ({
   getTitle,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [filter, setFilter] = React.useState('');
+  const [filter, setFilter] = React.useState("");
 
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -46,10 +47,15 @@ const MultiDropdown: React.FC<MultiDropdownProps> = ({
 
   const filteredOptions = React.useMemo(() => {
     if (!filter.trim()) return options;
-    return options.filter((option) => option.value.toLowerCase().includes(filter.toLowerCase()));
+    return options.filter((option) =>
+      option.value.toLowerCase().includes(filter.toLowerCase()),
+    );
   }, [options, filter]);
 
-  const isSelected = React.useCallback((key: string) => value.some((v) => v.key === key), [value]);
+  const isSelected = React.useCallback(
+    (key: string) => value.some((v) => v.key === key),
+    [value],
+  );
 
   const handleSelect = React.useCallback(
     (option: Option) => {
@@ -64,7 +70,7 @@ const MultiDropdown: React.FC<MultiDropdownProps> = ({
       }
 
       onChange(newValue);
-      setFilter('');
+      setFilter("");
     },
     [value, onChange, isSelected],
   );
@@ -92,11 +98,11 @@ const MultiDropdown: React.FC<MultiDropdownProps> = ({
   const isPlaceholder = !value.length && !filter;
 
   const dropdownClassName = cn(
-    styles['multi-dropdown'],
+    styles["multi-dropdown"],
     {
-      [styles['multi-dropdown--open']]: isOpen,
-      [styles['multi-dropdown--disabled']]: disabled,
-      [styles['multi-dropdown--placeholder']]: isPlaceholder,
+      [styles["multi-dropdown--open"]]: isOpen,
+      [styles["multi-dropdown--disabled"]]: disabled,
+      [styles["multi-dropdown--placeholder"]]: isPlaceholder,
     },
     className,
   );
@@ -104,38 +110,64 @@ const MultiDropdown: React.FC<MultiDropdownProps> = ({
   return (
     <div ref={dropdownRef} className={dropdownClassName}>
       <Input
-        value={filter || (isPlaceholder ? '' : displayText)}
+        value={filter || (isPlaceholder ? "" : displayText)}
         onChange={handleFilterChange}
-        placeholder={isPlaceholder ? displayText : ''}
+        placeholder={isPlaceholder ? displayText : ""}
         afterSlot={<ArrowDownIcon />}
         onClick={handleInputClick}
         disabled={disabled}
-        className={styles['multi-dropdown-input']}
+        className={styles["multi-dropdown-input"]}
       />
 
-      {isOpen && !disabled && filteredOptions.length > 0 && (
-        <div className={styles['multi-dropdown-options']}>
-          {filteredOptions.map((option) => (
-            <div
-              key={option.key}
-              className={cn(styles['multi-dropdown-option'], {
-                [styles['multi-dropdown-option--selected']]: isSelected(option.key),
-              })}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleSelect(option);
-              }}>
-              <Text view="p-16" weight="normal" className={styles['multi-dropdown-option-text']}>
-                {option.value}
-              </Text>
-            </div>
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {isOpen && !disabled && filteredOptions.length > 0 && (
+          <motion.div
+            className={styles["multi-dropdown-options"]}
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            transition={{ duration: 0.18 }}
+          >
+            {filteredOptions.map((option) => (
+              <motion.div
+                key={option.key}
+                layout
+                className={cn(styles["multi-dropdown-option"], {
+                  [styles["multi-dropdown-option--selected"]]: isSelected(
+                    option.key,
+                  ),
+                })}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSelect(option);
+                }}
+                whileHover={{ x: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <Text
+                  view="p-16"
+                  weight="normal"
+                  className={styles["multi-dropdown-option-text"]}
+                >
+                  {option.value}
+                </Text>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
 
-      {isOpen && !disabled && filteredOptions.length === 0 && (
-        <div className={styles['multi-dropdown--empty']}>Ничего не найдено</div>
-      )}
+        {isOpen && !disabled && filteredOptions.length === 0 && (
+          <motion.div
+            className={styles["multi-dropdown-empty"]}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+          >
+            Ничего не найдено
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

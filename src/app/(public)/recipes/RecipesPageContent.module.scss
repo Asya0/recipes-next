@@ -164,7 +164,7 @@
   }
 
   &__notFound {
-    color: #333;
+    color: var(--text-color);
     justify-content: center;
     display: flex;
     margin: 0 auto;

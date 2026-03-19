@@ -8,7 +8,9 @@
   font-weight: 600;
   font-size: 28px;
   line-height: 32px;
-  color: #333;
+  // color: #333;
+  color: var(--text-color);
+  transition: color 0.25s ease;
   margin-bottom: 24px;
 }
 
@@ -16,6 +18,10 @@
   list-style: none;
   padding: 0;
   margin: 0;
+
+  li {
+    color: inherit;
+  }
 }
 
 .step-item {
@@ -31,7 +37,9 @@
   font-weight: 600;
   font-size: 16px;
   line-height: 20px;
-  color: $primary-color;
+  // color: $primary-color;
+  color: var(--text-color);
+  transition: color 0.25s ease;
   margin-bottom: 8px;
 }
 
@@ -39,7 +47,9 @@
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
-  color: $primary-color;
+  // color: $primary-color;
+  color: var(--text-color);
+  transition: color 0.25s ease;
   margin: 0 0 12px 0;
 }
 

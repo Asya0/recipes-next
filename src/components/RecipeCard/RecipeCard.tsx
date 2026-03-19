@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Card, Button } from '@/components';
-import { Recipe } from '@/api/recipes';
-import styles from './RecipeCard.module.scss';
+import Link from "next/link";
+import { motion } from "motion/react";
+import { Card, Button } from "@/components";
+import { Recipe } from "@/api/recipes";
+import styles from "./RecipeCard.module.scss";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -12,9 +13,12 @@ interface RecipeCardProps {
   imageUrl?: string;
 }
 
-export const RecipeCard = ({ recipe,
-   isSaved, onSave, imageUrl
-   }: RecipeCardProps) => {
+export const RecipeCard = ({
+  recipe,
+  isSaved,
+  onSave,
+  imageUrl,
+}: RecipeCardProps) => {
   const handleSaveClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -25,7 +29,7 @@ export const RecipeCard = ({ recipe,
     imageUrl ||
     recipe.images?.[0]?.formats?.small?.url ||
     recipe.images?.[0]?.url ||
-    '/placeholder.jpg';
+    "/placeholder.jpg";
 
   return (
     <Link href={`/recipe/${recipe.documentId}`} className={styles.link}>
@@ -33,12 +37,21 @@ export const RecipeCard = ({ recipe,
         image={imageSource}
         cookingTime={recipe.cookingTime}
         title={recipe.name}
-        subtitle={recipe.summary?.replace(/<[^>]*>/g, '')}
+        subtitle={recipe.summary?.replace(/<[^>]*>/g, "")}
         contentSlot={Math.round(recipe.calories).toString()}
         actionSlot={
-          <Button onClick={handleSaveClick} className={isSaved ? styles.saved : styles.save}>
-            {isSaved ? 'Saved' : 'Save'}
-          </Button>
+          <motion.div
+            whileTap={{ scale: 0.9 }}
+            animate={isSaved ? { scale: [1, 1.15, 1] } : {}}
+            transition={{ duration: 0.25 }}
+          >
+            <Button
+              onClick={handleSaveClick}
+              className={isSaved ? styles.saved : styles.save}
+            >
+              {isSaved ? "Saved" : "Save"}
+            </Button>
+          </motion.div>
         }
       />
     </Link>
